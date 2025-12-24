@@ -10,7 +10,6 @@ categories:
 draft: false
 cover:
   image: /img/posts/general/3gp_to_mp4.webp
-  relative: true
 ---
 
 ## TL;DR

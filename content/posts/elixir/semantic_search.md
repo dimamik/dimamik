@@ -12,7 +12,6 @@ categories:
 draft: false
 cover:
   image: /img/posts/elixir/semantic_search.webp
-  relative: true
 externalLink: https://hexdocs.pm/torus/semantic_search.html
 ---
 

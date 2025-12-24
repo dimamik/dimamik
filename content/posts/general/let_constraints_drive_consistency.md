@@ -12,7 +12,6 @@ categories:
 draft: false
 cover:
   image: /img/posts/general/let_constraints_drive_consistency.webp
-  relative: true
 ---
 
 # TL;DR

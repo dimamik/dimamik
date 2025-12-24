@@ -22,6 +22,8 @@ permalinks:
 params:
   description: Personal blog.
   author: Dima Mikielewicz
+  images:
+    - /img/cover.webp
   keywords:
     - Dima Mikielewicz
     - dimamik

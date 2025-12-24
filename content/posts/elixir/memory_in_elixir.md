@@ -11,7 +11,6 @@ categories:
 draft: false
 cover:
   image: /img/posts/elixir/memory_in_elixir.webp
-  relative: true
 ---
 
 ## TL;DR
