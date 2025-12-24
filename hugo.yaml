@@ -1,4 +1,80 @@
-baseURL: https://dimamik.com
-theme: ["PaperMod"]
-languageCode: en-us
+baseURL: http://localhost:1313/
 title: Hi, I'm Dima
+languageCode: en-us
+theme: ["PaperMod"]
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+pagination:
+  pagerSize: 10
+
+taxonomies:
+  category: categories
+  tag: tags
+
+permalinks:
+  posts: /posts/:contentbasename/
+
+params:
+  description: Personal blog.
+  author: Dima Mikielewicz
+  keywords:
+    - Dima Mikielewicz
+    - dimamik
+    - Elixir
+    - PostgreSQL
+    - Software Engineering
+  DateFormat: "2006-01-02"
+  defaultTheme: auto
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowCodeCopyButtons: true
+  disableSpecial1stPost: true
+  hideFooter: false
+  ShowRssButtonInSectionTermList: true
+  assets:
+    favicon: favicon.ico
+    favicon16x16: favicon-16x16.png
+    favicon32x32: favicon-32x32.png
+    apple_touch_icon: apple-touch-icon.png
+    safari_pinned_tab: safari-pinned-tab.svg
+    theme_color: "#4c1d95"
+    msapplication_TileColor: "#4c1d95"
+  profileMode:
+    enabled: false
+    title: "Hi, I'm Dima"
+    subtitle: "Elixir-focused software engineer sharing occasional notes on data consistency, PostgreSQL, and distributed systems."
+  socialIcons:
+    - name: github
+      url: https://github.com/dimamik
+    - name: linkedin
+      url: https://www.linkedin.com/in/dima-mikielewicz-5786961b4/
+    - name: x
+      url: https://x.com/dimamikielewicz
+
+menu:
+  main:
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 1
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 2
+    - identifier: about
+      name: About
+      url: /about/
+      weight: 3
+
+mainSections:
+  - posts
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true

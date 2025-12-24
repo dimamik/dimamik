@@ -1,0 +1,14 @@
+.main a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+.main a:hover,
+.main a:focus {
+  text-decoration: underline;
+}
+
+.main a.entry-link {
+  text-decoration: none;
+}

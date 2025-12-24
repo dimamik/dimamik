@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.LanguageCode | default site.Language.Lang | default " en" }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="0; url={{ " /" | absURL }}">
+    <link rel="canonical" href="{{ " /" | absURL }}">
+    <title>Redirecting…</title>
+</head>
+
+<body>
+    <script>
+        window.location.replace("{{ " / " | absURL }}");
+    </script>
+    <p>Redirecting to <a href="{{ " /" | absURL }}">home</a>…</p>
+</body>
+
+</html>
