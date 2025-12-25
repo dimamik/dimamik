@@ -4,7 +4,7 @@ date: 2025-02-09T00:00:00Z
 description: Soft deletion strategy entirely within PostgreSQL. By combining views, rules, and constraints, you can keep your application code clean while preserving and managing soft deletes at the database level.
 tags:
     - postgresql
-    - soft_deletions
+    - soft deletions
     - elixir
 categories:
     - Postgres

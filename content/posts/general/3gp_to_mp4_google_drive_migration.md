@@ -4,7 +4,7 @@ date: 2025-02-08T00:00:00Z
 description: I love keeping memories, but sometimes they take up too much space. In this post, I'll walk you through how I reduced the amount of space my old videos take by about 30%.
 tags:
   - general
-  - advent_of_code
+  - advent of code
 categories:
   - General
 draft: false

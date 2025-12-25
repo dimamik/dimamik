@@ -4,7 +4,7 @@ date: 2025-04-20T00:00:00Z
 description: Walk through adding semantic search to your application using Torus and PostgreSQL.
 tags:
   - elixir
-  - semantic_search
+  - semantic search
   - torus
   - postgres
 categories:

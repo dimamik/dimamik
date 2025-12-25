@@ -5,7 +5,7 @@ description: Best practices, derived from my own experience, that help us to enf
 pinned: true
 tags:
   - general
-  - data_consistency
+  - data consistency
   - postgresql
 categories:
   - General

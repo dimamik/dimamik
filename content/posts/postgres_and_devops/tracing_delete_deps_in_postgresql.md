@@ -4,7 +4,7 @@ date: 2025-03-28T00:00:00Z
 description: PostgreSQL query that recursively traces foreign key (FK) relationships to find all tables that indirectly or directly depend on a specific table and displays their ON DELETE actions.
 tags:
   - postgresql
-  - foreign_keys
+  - foreign keys
   - sql
 categories:
   - Postgres
