@@ -39,13 +39,8 @@ params:
   hideFooter: false
   ShowRssButtonInSectionTermList: true
   assets:
-    favicon: favicon.ico
-    favicon16x16: favicon-16x16.png
-    favicon32x32: favicon-32x32.png
-    apple_touch_icon: apple-touch-icon.png
-    safari_pinned_tab: safari-pinned-tab.svg
+    disableScrollBarStyle: true
     theme_color: "#4c1d95"
-    msapplication_TileColor: "#4c1d95"
   profileMode:
     enabled: false
     title: "Hi, I'm Dima"

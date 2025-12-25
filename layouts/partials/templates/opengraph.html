@@ -1,0 +1,61 @@
+{{/*
+Custom OpenGraph tags.
+
+This overrides PaperMod's templates/opengraph.html.
+
+Scope: only the core OG tags + og:image selection.
+Twitter cards are handled by PaperMod's templates/twitter_cards.html.
+*/}}
+
+<meta property="og:url" content="{{ .Permalink }}">
+
+{{- with or site.Title site.Params.title | plainify }}
+<meta property="og:site_name" content="{{ . }}">
+{{- end }}
+
+{{- with or .Title site.Title site.Params.title | plainify }}
+<meta property="og:title" content="{{ . }}">
+{{- end }}
+
+{{- with or .Description .Summary site.Params.description | plainify | htmlUnescape | chomp }}
+<meta property="og:description" content="{{ . }}">
+{{- end }}
+
+{{- with or .Params.locale site.Language.LanguageCode site.Language.Lang }}
+<meta property="og:locale" content="{{ . }}">
+{{- end }}
+
+{{- if .IsPage }}
+<meta property="og:type" content="article">
+{{- else }}
+<meta property="og:type" content="website">
+{{- end }}
+
+{{/* --- OG image selection (no generation) --- */}}
+{{- $ogImage := "" -}}
+
+{{- if .Params.cover.image -}}
+{{- /* Prefer explicit cover image (PaperMod style) */ -}}
+{{- if (ne .Params.cover.relative true) -}}
+{{- $ogImage = (.Params.cover.image | absURL) -}}
+{{- else -}}
+{{- $ogImage = ((path.Join .RelPermalink .Params.cover.image) | absURL) -}}
+{{- end -}}
+{{- else -}}
+{{- /* Next, try to discover page images (featured images, etc.) */ -}}
+{{- $imgs := partial "_funcs/get-page-images" . -}}
+{{- with index $imgs 0 -}}
+{{- $ogImage = .Permalink -}}
+{{- end -}}
+{{- end -}}
+
+{{- /* Finally, fall back to a site-wide default image (if configured) */ -}}
+{{- if eq $ogImage "" -}}
+{{- with (index (site.Params.images | default (slice)) 0) -}}
+{{- $ogImage = (. | absURL) -}}
+{{- end -}}
+{{- end -}}
+
+{{- if ne $ogImage "" -}}
+<meta property="og:image" content="{{ $ogImage }}">
+{{- end -}}
