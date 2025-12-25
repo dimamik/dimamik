@@ -10,7 +10,7 @@ I like building elegant solutions to complex problems. At this stage of my caree
 
 ### Projects
 
-- [Torus](https://github.com/dimamik/torus) - a plug-and-play Elixir library that integrates PostgreSQL's search into Ecto, streamlining the construction of advanced search queries. Supports similarity search, pattern matching search, full-text search, and semantic search.
+- [Torus](https://github.com/dimamik/torus) - a plug-and-play Elixir library that integrates PostgreSQL's search into Ecto, streamlining the construction of advanced search queries. Supports similarity, pattern matching, full-text, and semantic search.
   <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
     <iframe 
       src="https://www.youtube.com/embed/T_B8lQh_f4Q?si=j2UPMu_9xR0AJov_" 
@@ -24,7 +24,7 @@ I like building elegant solutions to complex problems. At this stage of my caree
   </div>
 
 - [torus.dimamik.com](https://torus.dimamik.com) - Torus library demo, where you can explore different search methods and their configurations.
-- [Vault](https://github.com/dimamik/vault) - Lightweight Elixir library for immutable data storage within a process subtree
+- [Vault](https://github.com/dimamik/vault) - lightweight Elixir library for immutable data storage within a process subtree
 - [Advent of Code 2024](https://github.com/dimamik/advent_of_code_2024) - 25 programming languages, each day in a new programming language.
 - [Subtitles player](https://github.com/dimamik/subtitles-player) - takes a video, generates subtitles, and plays the video alongside the generated subtitles.
 - [Schedule your life](https://github.com/agh-kiwis/agh-kiwis) - uses time allocation algorithms to chunk and plan long-term activities throughout your calendar. Reallocates events if they are not completed on time.
