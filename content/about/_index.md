@@ -24,7 +24,10 @@ I like building elegant solutions to complex problems. At this stage of my caree
   </div>
 
 - [torus.dimamik.com](https://torus.dimamik.com) - Torus library demo, where you can explore different search methods and their configurations.
-- [Vault](https://github.com/dimamik/vault) - lightweight Elixir library for immutable data storage within a process subtree
+- [Vault](https://github.com/dimamik/vault) - lightweight Elixir library for immutable data storage within a process subtree.
+- [Legion](https://github.com/dimamik/legion) - Elixir-native framework for building AI agents.
+- [Live Piano](https://piano.dimamik.com) - play your MIDI keyboard (or virtual piano) for your friends, live, directly in the browser. Uses WebRTC for low-latency streaming of MIDI events.
+- [Live Chess](https://chess.dimamik.com) - play chess with your friends.
 - [Advent of Code 2024](https://github.com/dimamik/advent_of_code_2024) - 25 programming languages, each day in a new programming language.
 - [Subtitles player](https://github.com/dimamik/subtitles-player) - takes a video, generates subtitles, and plays the video alongside the generated subtitles.
 - [Schedule your life](https://github.com/agh-kiwis/agh-kiwis) - uses time allocation algorithms to chunk and plan long-term activities throughout your calendar. Reallocates events if they are not completed on time.
