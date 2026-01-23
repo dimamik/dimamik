@@ -1,7 +1,7 @@
 ---
 title: "Next 50 Years of AI"
 date: 2026-01-23T00:00:00Z
-description: Over the last 6 months, AI adoption was exponential, but is it really all that useful? Will AI take jobs?
+description: Over the last 6 months, AI adoption was exponential, but is it really all that useful? Will AI take more jobs?
 tags:
   - general
   - AI

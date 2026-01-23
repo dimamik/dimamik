@@ -2,7 +2,7 @@
 title: "Let constraints drive consistency"
 date: 2024-05-10T00:00:00Z
 description: Best practices, derived from my own experience, that help us to enforce data consistency in a large production database (PostgreSQL and Ecto).
-pinned: true
+pinned: false
 tags:
   - general
   - data consistency
