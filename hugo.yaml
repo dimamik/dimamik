@@ -1,4 +1,5 @@
 baseURL: https://dimamik.com/
+googleAnalytics: G-MFQ44XKZ7S
 title: Hi, I'm Dima
 languageCode: en-us
 theme: ["PaperMod"]
@@ -45,6 +46,8 @@ params:
     enabled: false
     title: "Hi, I'm Dima"
     subtitle: "Elixir-focused software engineer sharing occasional notes on data consistency, PostgreSQL, and distributed systems."
+  social:
+    twitter: dimamikielewicz
   socialIcons:
     - name: github
       url: https://github.com/dimamik
