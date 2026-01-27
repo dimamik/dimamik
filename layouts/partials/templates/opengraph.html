@@ -31,22 +31,31 @@ Twitter cards are handled by PaperMod's templates/twitter_cards.html.
 <meta property="og:type" content="website">
 {{- end }}
 
-{{/* --- OG image selection (no generation) --- */}}
+{{/* --- OG image selection --- */}}
 {{- $ogImage := "" -}}
+{{- $hasExplicitCover := false -}}
 
 {{- if .Params.cover.image -}}
+{{- $hasExplicitCover = true -}}
 {{- /* Prefer explicit cover image (PaperMod style) */ -}}
 {{- if (ne .Params.cover.relative true) -}}
 {{- $ogImage = (.Params.cover.image | absURL) -}}
 {{- else -}}
 {{- $ogImage = ((path.Join .RelPermalink .Params.cover.image) | absURL) -}}
 {{- end -}}
-{{- else -}}
-{{- /* Next, try to discover page images (featured images, etc.) */ -}}
-{{- $imgs := partial "_funcs/get-page-images" . -}}
-{{- with index $imgs 0 -}}
-{{- $ogImage = .Permalink -}}
+{{- else if .Params.images -}}
+{{- $hasExplicitCover = true -}}
+{{- /* Page has explicit images param */ -}}
+{{- with index .Params.images 0 -}}
+{{- $ogImage = (. | absURL) -}}
 {{- end -}}
+{{- end -}}
+
+{{- /* For pages without explicit cover, generate OG image with Hugo */ -}}
+{{- if and (not $hasExplicitCover) .IsPage .Title -}}
+{{- $ogImage = partial "generate-og-image.html" . -}}
+{{- else if and (not $hasExplicitCover) .IsHome -}}
+{{- $ogImage = partial "generate-og-image.html" (dict "Title" "Hi, I'm Dima") -}}
 {{- end -}}
 
 {{- /* Finally, fall back to a site-wide default image (if configured) */ -}}

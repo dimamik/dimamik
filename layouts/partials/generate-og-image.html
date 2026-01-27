@@ -1,0 +1,24 @@
+{{- $title := .Title | plainify | string -}}
+
+{{- /* Load the base background image */ -}}
+{{- $bg := resources.Get "images/og-background.png" -}}
+
+{{- /* Load custom fonts */ -}}
+{{- $fontBold := resources.Get "fonts/Satoshi-Bold.ttf" -}}
+
+{{- if and $bg $fontBold -}}
+{{- /* Add title - large, bold, centered */ -}}
+{{- $titleOpts := dict
+"color" "#ffffff"
+"size" 80
+"linespacing" 18
+"x" 600
+"y" 265
+"alignx" "center"
+"font" $fontBold
+-}}
+{{- $img := $bg.Filter (images.Text $title $titleOpts) -}}
+
+{{- /* Output the absolute URL */ -}}
+{{- absURL $img.RelPermalink -}}
+{{- end -}}
