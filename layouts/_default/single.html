@@ -51,6 +51,9 @@
     {{- end }}
 
     <footer class="post-footer">
+        <hr style="margin-bottom: 1em;">
+        <p style="margin-bottom: 1em;">If you liked this post, <a href="https://x.com/dimamikielewicz" target="_blank"
+                rel="noopener">follow me on X</a> for more!</p>
         {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}
         <ul class="post-tags">
             {{- range ($.GetTerms $tags) }}
