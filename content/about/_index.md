@@ -4,6 +4,14 @@ description: Dima Mikielewicz. A little story about me.
 draft: false
 ---
 
+## Social
+
+- [GitHub](https://github.com/dimamik)
+- [LinkedIn](https://www.linkedin.com/in/dima-mikielewicz-5786961b4/)
+- [Twitter/X](https://x.com/dimamikielewicz)
+- [Bluesky](https://bsky.app/profile/dimamik.bsky.social)
+- contact@dimamik.com
+
 ## Experience
 
 I like building elegant solutions to complex problems. At this stage of my career, I adhere to the Elixir's simplicity and prefer building things with it. Let's chat!
@@ -37,7 +45,6 @@ I like building elegant solutions to complex problems. At this stage of my caree
 ### [Software Mansion](https://swmansion.com/):
 
 - **[2022 - present]** Contracting for a large US-based company with an Elixir stack **(Elixir, PostgreSQL, Oban, Redis, React, GraphQL)** and legacy parts of Ruby:
-
   - Migrating legacy Ruby codebase to Elixir
   - Enforcing data consistency in a large production database with millions of active users
   - Translating real customer problems into working Elixir solutions
@@ -66,11 +73,3 @@ I like building elegant solutions to complex problems. At this stage of my caree
 ## Education
 
 - **[2019 - 2022]** Bachelor of Engineering in Computer Science at [AGH University of Science and Technology](https://www.agh.edu.pl/en/)
-
-## Social
-
-- [GitHub](https://github.com/dimamik)
-- [LinkedIn](https://www.linkedin.com/in/dima-mikielewicz-5786961b4/)
-- [Twitter/X](https://x.com/dimamikielewicz)
-- [Bluesky](https://bsky.app/profile/dimamik.bsky.social)
-- contact@dimamik.com
