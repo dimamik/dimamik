@@ -12,17 +12,32 @@ categories:
 draft: false
 ---
 
-## Setting Coordinates
+## Setting the Stage
 
-I've used [Oban](https://github.com/oban-bg/oban) for almost as long as I've been writing software in Elixir, and it has always been an essential tool for processing jobs. I always knew Oban was cool, but I never dug deeper. This article is a collection of my notes and observations on how the Python implementation of Oban works and what I've learned while exploring its codebase. I'll also try to compare it with the Elixir version and talk about concurrency in general.
+I've used [Oban in Elixir](https://github.com/oban-bg/oban) for almost as long as I've been writing software in Elixir, and it has always been an essential tool for processing jobs. I always knew Oban was cool, but I never dug deeper. This article is a collection of my notes and observations on how the Python implementation of Oban works and what I've learned while exploring its codebase. I'll also try to compare it with the Elixir version and talk about concurrency in general.
 
-## Leaving the Atmosphere
+## Surface Level
 
-Oban allows you to **insert and process jobs using only your database**. You can insert the job to send a confirmation email in the same database transaction where you create the user. If one thing fails, everything is rolled back.
+[Oban](https://oban.pro/docs/py/index.html) allows you to **insert and process jobs using only your database**. You can insert the job to send a confirmation email in the same database transaction where you create the user. If one thing fails, everything is rolled back.
 
-Additionally, like most job processing frameworks, Oban has queues plus local and global queue limits. But unlike others, it **stores your completed jobs** and can [even keep their results if needed](https://oban.pro/docs/py/0.5.0/writing_jobs.html#recording-results). It has built-in [cron scheduling](https://oban.pro/docs/py/0.5.0/periodic_jobs.html#periodic-jobs) and [many more](https://oban.pro/docs/py/0.5.0/managing_queues.html) features to control how your jobs are processed.
+Additionally, like most job processing frameworks, Oban has [queues](https://oban.pro/docs/py/0.5.0/defining_queues.html) with local and global queue limits. But unlike others, it **stores your completed jobs** and can [even keep their results if needed](https://oban.pro/docs/py/0.5.0/writing_jobs.html#recording-results). It has built-in [cron scheduling](https://oban.pro/docs/py/0.5.0/periodic_jobs.html#periodic-jobs) and [many more features](https://oban.pro/docs/py/0.5.0/managing_queues.html) to control how your jobs are processed.
 
-## Hyperspace - Job Processing Path
+Oban comes in two versions - [Open Source Oban-py](https://oban.pro/docs/py/index.html) and [commercial Oban-py-pro](https://oban.pro/docs/py_pro/adoption.html).
+
+OSS Oban has a few limitations, which are automatically lifted in the Pro version:
+
+- **Single-threaded asyncio execution** - concurrent but not truly parallel, so CPU-bound jobs block the event loop.
+- **No bulk inserts** - each job is inserted individually.
+- **No bulk acknowledgements** - each job completion is persisted individually.
+- **Inaccurate rescues** - jobs that are long-running might get rescued even if the producer is still alive. Pro version uses smarter heartbeats to track producer liveness.
+
+In addition, Oban-py-pro comes with a few extra features you'd configure separately, like [workflows](https://oban.pro/docs/py_pro/0.5.0/workflow.html), [relay](https://oban.pro/docs/py_pro/0.5.0/relay.html), [unique jobs](https://oban.pro/docs/py_pro/0.5.0/unique_jobs.html), and [smart concurrency](https://oban.pro/docs/py_pro/0.5.0/smart_concurrency.html).
+
+OSS Oban-py is a great start for your hobby project, or if you'd want to evaluate Oban philosophy itself, but for any bigger scale - I'd go with [Oban Pro](https://oban.pro/docs/py_pro/index.html). The pricing seems very compelling, considering the amount of work put into making the above features work.
+
+I obviously can't walk you through the Pro version features, but let's start with the basics. How Oban Py works under the hood, from the job insertion until the job execution. Stay tuned.
+
+## Going Deeper - Job Processing Path
 
 Let's get straight to it. You insert your job:
 
@@ -37,7 +52,7 @@ async def send_email(to: str, subject: str, body: str):
 await send_email.enqueue("user@example.com", "Hello", "World")
 ```
 
-Next, the job lands in `oban_jobs` database table with `state = 'available'`. Oban fires off a PostgreSQL `NOTIFY` on the `insert` channel:
+After the insertion, the job lands in the `oban_jobs` database table with `state = 'available'`. Oban fires off a PostgreSQL `NOTIFY` on the `insert` channel:
 
 ```python
 # oban.py:414-419
@@ -47,7 +62,7 @@ queues = {job.queue for job in result if job.state == "available"}
 await self._notifier.notify("insert", [{"queue": queue} for queue in queues])
 ```
 
-Every Oban node listening on that channel receives the notification. **The Stager** on each node gets woken up, but each Stager only cares about queues it's actually running. Be aware that each node decides which queues it runs, so if the current node runs this queue, the producer is notified:
+Every Oban node listening on that channel receives the notification. **The Stager** on each node gets woken up, but each **Stager** only cares about queues it's actually running. Be aware that each node decides which queues it runs, so if the current node runs this queue, the producer is notified:
 
 ```python
 # _stager.py:95-99
@@ -58,7 +73,7 @@ async def _on_notification(self, channel: str, payload: dict) -> None:
         self._producers[queue].notify()
 ```
 
-That notify() call sets an `asyncio.Event`, breaking the Producer out of its wait loop, so it can dispatch the job(s) to the worker(s):
+That `notify()` call sets an `asyncio.Event`, breaking **the Producer** out of its wait loop, so it can dispatch the jobs to the workers:
 
 ```python
 # _producer.py:244-262
@@ -86,7 +101,7 @@ async def _loop(self) -> None:
             logger.exception("Error in producer for queue %s", self._queue)
 ```
 
-Before fetching the jobs, the producer persists all pre-existing job completions (acks) to the database to make sure queue limits are respected. Next, it fetches new jobs, transitioning their state to executing at the same time. A slightly more complex version of this SQL is used:
+Before fetching the jobs, **the producer** persists all pre-existing job completions (acks) to the database to make sure queue limits are respected. Next, it fetches new jobs, transitioning their state to executing at the same time. A slightly more complex version of this SQL is used:
 
 ```sql
 -- fetch_jobs.sql (simplified)
@@ -128,7 +143,7 @@ Imagine two producer instances (A and B) trying to fetch jobs simultaneously:
 
 Back in Python, we know that the jobs we just fetched should be processed immediately. When we fetched the job, we already transitioned its state and respected the queue demand.
 
-Each job gets dispatched as an async task:
+Each job gets dispatched as an **async task**:
 
 ```python
 jobs = await self._get_jobs()
@@ -143,7 +158,7 @@ for job in jobs:
 
 `add_done_callback` ensures that independent of success or failure, we can attach a callback to handle job completion.
 
-The dispatcher controls how exactly the job is run. For the non-pro Oban version, it just uses `asyncio.create_task` to run the job in the event loop:
+**The dispatcher** controls how exactly the job is run. For the non-pro Oban version, it just uses `asyncio.create_task` to run the job in the event loop:
 
 ```python
 # _producer.py:69-71
@@ -152,9 +167,9 @@ class LocalDispatcher:
         return asyncio.create_task(producer._execute(job))
 ```
 
-[For pro version](https://oban.pro/releases/py_pro), we could plug whatever we want, for example our pool of asyncio workers running per core.
+[For pro version](https://oban.pro/releases/py_pro), local asyncio dispatcher is automatically replaced with a pool of processes, so you don't need to do anything to have true parallelism across multiple cores.
 
-After the job is dispatched, the **Executor** takes over. It resolves your worker class from the string name, runs it, and pattern-matches the result:
+After the job is dispatched, **the Executor** takes over. It resolves your worker class from the string name, runs it, and pattern-matches the result:
 
 ```python
 # _executor.py:73-83
@@ -176,6 +191,8 @@ match result:
         # Completed successfully
 ```
 
+And that's **the second cool part**! You see how similar it is to [Elixir's pattern matching](https://hexdocs.pm/elixir/pattern-matching.html)? I love how it's implemented!
+
 When execution finishes, the result gets queued for acknowledgement:
 
 ```python
@@ -183,11 +200,11 @@ When execution finishes, the result gets queued for acknowledgement:
 self._pending_acks.append(executor.action)
 ```
 
-The completion callback notifies the **Producer** to wake up again-fetch more jobs, and batch-ack the finished ones in a single query.
+The completion callback notifies **the Producer** to wake up again-fetch more jobs, and batch-ack the finished ones in a single query.
 
 That's the hot path: `Insert → Notify → Fetch (with locking) → Execute → Ack.` Five hops from your code to completion. What about the background processes? What about errors and retries? What about periodic jobs, cron, and all these other pieces? Stay tuned.
 
-## First Contact - Background Processes
+## The Undercurrents - Background Processes
 
 Oban runs several background loops that keep the system healthy.
 
@@ -263,9 +280,11 @@ if self._is_leader:
     await self._query.resign_leader(self._name, self._node)
 ```
 
+And that's **the third cool part**! Leader election is delegated entirely to PostgreSQL. Oban uses `INSERT ... ON CONFLICT` with a TTL-based lease - no Raft, no consensus protocol, no external coordination service. If the leader dies, its lease expires and the next node to run the election query takes over. Simple, effective, and zero additional infrastructure.
+
 ### Lifeline: Rescuing Orphaned Jobs
 
-Workers crash. Containers get killed. When that happens, jobs can get stuck executing indefinitely. The Lifeline process (leader-only) rescues them:
+Workers crash. Containers get killed. When that happens, jobs can get stuck executing indefinitely. **The Lifeline** process (leader-only) rescues them:
 
 ```python
 # _lifeline.py:73-77
@@ -276,13 +295,11 @@ async def _rescue(self) -> None:
     await use_ext("lifeline.rescue", _rescue, self._query, self._rescue_after)
 ```
 
-The rescue is purely time-based-any job in `executing` state longer than `rescue_after` (default: 5 minutes) gets moved back. It doesn't check whether the producer that owns the job is still alive. This means legitimately long-running jobs could be rescued and executed a second time.
+Oban-py rescue mechanics are purely time-based - any job in `executing` state longer than `rescue_after` (default: 5 minutes) gets moved back. Unlike the Oban Pro version, it doesn't check whether the producer that owns the job is still alive. This means legitimately long-running jobs could be rescued and executed a second time.
 
-Elixir's Oban has the [same caveat](https://hexdocs.pm/oban/Oban.Plugins.Lifeline.html) (with a more conservative default of 60 minutes), and the docs explicitly warn: _"This plugin may transition jobs that are genuinely executing and cause duplicate execution."_ For smarter rescue that tracks producer liveness via heartbeats, Oban Pro offers a [`DynamicLifeline`](https://oban.pro/docs/pro/Oban.Pro.Plugins.DynamicLifeline.html) plugin.
+The takeaway is that you should set `rescue_after` higher than your longest expected job duration, and design workers to be idempotent.
 
-The takeaway: set `rescue_after` higher than your longest expected job duration, and design workers to be idempotent.
-
-The SQL itself is straightforward-jobs stuck executing get moved back to available or discarded if they've exhausted retries:
+The SQL itself is straightforward - jobs stuck executing get moved back to available or discarded if they've exhausted retries:
 
 ```sql
 -- rescue_jobs.sql (simplified)
@@ -305,7 +322,7 @@ The rescued counter in meta lets you track how often jobs needed saving.
 
 ### Pruner: Cleaning Up Old Jobs
 
-Without pruning, your oban_jobs table grows forever. The Pruner (also leader-only) deletes terminal jobs older than max_age (default: 1 day):
+Without pruning, your oban_jobs table grows forever. **The Pruner** (also leader-only) deletes terminal jobs older than max_age (default: 1 day):
 
 ```sql
 -- prune_jobs.sql
@@ -325,7 +342,7 @@ The LIMIT prevents long-running deletes from blocking other operations.
 
 ### Retry & Backoff Mechanics
 
-When a job raises an exception, the Executor decides its fate:
+When a job raises an exception, **the Executor** decides its fate:
 
 ```python
 # _executor.py:96-109
@@ -346,9 +363,9 @@ match result:
             )
 ```
 
-Simple rule: under `max_attempts`? Retry. At the `limit`? Discard.
+Simple rule: under `max_attempts` - retry, otherwise - discard.
 
-The default backoff uses jittery_clamped-exponential growth with randomness to prevent thundering herds:
+The default backoff uses jittery-clamped exponential growth with randomness to prevent thundering herds:
 
 ```python
 # _backoff.py:66-87
@@ -363,9 +380,11 @@ def jittery_clamped(attempt: int, max_attempts: int, *, clamped_max: int = 20) -
     return jitter(time, mode="inc")
 ```
 
+And that's **the fourth cool thing**! Backoff includes jitter to prevent [thundering herds](https://en.wikipedia.org/wiki/Thundering_herd_problem) - without it, all failed jobs from the same batch would retry at the exact same moment, spiking load all over again.
+
 The formula: 15 + 2^attempt seconds, with up to 10% added jitter. Attempt 1 waits ~17s. Attempt 5 waits ~47s. Attempt 10 waits ~1039s (~17 minutes).
 
-The clamping handles jobs with high max_attempts-if you set max_attempts=100, it scales the attempt number down proportionally so you don't wait years between retries.
+The clamping handles jobs with high `max_attempts` - if you set `max_attempts=100`, it scales the attempt number down proportionally so you don't wait years between retries.
 
 Workers can override this with custom backoff:
 
@@ -380,11 +399,12 @@ class MyWorker:
         return job.attempt * 60
 ```
 
-## The Mission Log
+## Surfacing - Takeaways
 
 - **PostgreSQL does the heavy lifting.** `FOR UPDATE SKIP LOCKED` for concurrent job fetching, `LISTEN/NOTIFY` for real-time signaling, `ON CONFLICT` for leader election - the database isn't just storage, it's the coordination layer. There's no Redis, no ZooKeeper, no external broker. One less thing to operate.
 - **Oban-py is concurrent, but not parallel**. Async IO allows multiple jobs to be in-flight, but the event loop is single-threaded. For I/O-bound workloads, this is fine. For CPU-bound tasks, consider using the Pro version with a process pool.
 - **Leader election is simple and effective.** No consensus protocol, no Raft - just an `INSERT ... ON CONFLICT` with a TTL. The leader refreshes at 2x the normal rate to hold the lease. If it dies, the lease expires and another node takes over. Good enough for pruning and rescuing.
-- **The rescue mechanism might need more attention.** It catches orphaned jobs after a timeout, but long-running jobs need explicit configuration. The limiting part is, that you can only configure `rescue_after` globally, not per job, nor per queue. So if your node handles both light and heavy jobs - you might end up rescuing jobs that are still running.
+- **The codebase is a pleasure to read.** Clear naming, consistent patterns, and well-separated concerns - exploring it felt more like reading a well-written book than understanding a library.
+- **OSS gets you far, Pro fills the gaps.** Bulk operations, smarter rescues, and true parallelism are all Pro-only - but for what you get, Pro license feels like a great deal.
 
-Overall, Oban.py is a clean and well-structured port. If you're coming from Elixir and miss Oban, or if you're in Python and want a database-backed job queue that doesn't require external infrastructure beyond PostgreSQL - it's worth looking at.
+Overall, [Oban.py](https://oban.pro/docs/py/index.html) is a clean and well-structured port. If you're coming from Elixir and miss Oban, or if you're in Python and want a database-backed job queue that doesn't require external infrastructure beyond PostgreSQL - it's worth looking at.
