@@ -85,4 +85,4 @@ Labour we see today will be reshaped. White-suits will earn less than blue-colla
 
 # Well
 
-I have no idea if any of the things I wrote here make sense. I also don't have any courage to defend them. If you don't agree and want to share - write your own blog.
+I have no idea if any of the things I wrote here make sense. Let me know what do you think!
