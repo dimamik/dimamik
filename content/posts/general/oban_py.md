@@ -12,6 +12,8 @@ categories:
 draft: false
 ---
 
+> 🚀 This post made it to [Hacker News](https://news.ycombinator.com/item?id=46797594)! If you found it useful, you can follow me on [X](https://x.com/dimamikielewicz) or [Bluesky](https://bsky.app/profile/dimamik.bsky.social).
+
 ## Setting the Stage
 
 I've used [Oban in Elixir](https://github.com/oban-bg/oban) for almost as long as I've been writing software in Elixir, and it has always been an essential tool for processing jobs. I always knew Oban was cool, but I never dug deeper. This article is a collection of my notes and observations on how the Python implementation of Oban works and what I've learned while exploring its codebase. I'll also try to compare it with the Elixir version and talk about concurrency in general.
