@@ -12,3 +12,10 @@
 .main a.entry-link {
   text-decoration: none;
 }
+
+/* Remove link underline when wrapping code - the code's box-shadow provides the underline */
+.main a:has(code),
+.main a:has(code):hover,
+.main a:has(code):focus {
+  text-decoration: none;
+}
