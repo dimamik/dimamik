@@ -31,6 +31,8 @@ Post
 
 Currently, Torus supports pattern match, similarity, full-text ([TF-IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,appear%20more%20frequently%20in%20general.) and [BM25](https://en.wikipedia.org/wiki/Okapi_BM25)), semantic search, with plans to expand further. In addition to abstracting complex PostgreSQL functions, Torus provides full guides on tradeoffs and ways to add them to your application straight in the docs.
 
+You could see all available search types in action [on the demo page](https://torus.dimamik.com/?method=bm25)
+
 ## Full text search
 
 Full-text search finds documents containing specific words or phrases, handling linguistic variations like stemming ("running" matches "run") and stop word removal.
