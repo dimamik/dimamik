@@ -1,6 +1,6 @@
 ---
 title: "BM25 Search in Ecto with Torus"
-date: 2026-01-27T00:00:00Z
+date: 2026-02-05T00:00:00Z
 description: BM25 (Best Matching 25) is a modern ranking function for full-text search that provides better relevance than traditional TF-IDF algorithms. Torus integrates BM25 search into your Ecto queries through the pg_textsearch PostgreSQL extension.
 tags:
   - torus
