@@ -9,6 +9,7 @@ draft: false
 ---
 
 - [Legion](https://legion.swmansion.com)
+- [Shop demo](https://legion.swmansion.com/shop)
 - [Legion GitHub](https://github.com/dimamik/legion)
 - [LegionWeb GitHub](https://github.com/dimamik/legion_web)
 - [Software Mansion](https://swmansion.com)
